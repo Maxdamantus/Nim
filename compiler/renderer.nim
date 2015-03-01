@@ -395,6 +395,7 @@ proc lsub(n: PNode): int =
   of nkClosedSymChoice, nkOpenSymChoice: 
     result = lsons(n) + len("()") + sonsLen(n) - 1
   of nkTupleTy: result = lcomma(n) + len("tuple[]")
+  of nkTupleClassTy: result = len("tuple")
   of nkDotExpr: result = lsons(n) + 1
   of nkBind: result = lsons(n) + len("bind_")
   of nkBindStmt: result = lcomma(n) + len("bind_")

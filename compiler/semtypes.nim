@@ -346,7 +346,6 @@ proc semTypeIdent(c: PContext, n: PNode): PSym =
       result = errorSym(c, n)
   
 proc semTuple(c: PContext, n: PNode, prev: PType): PType = 
-  if n.sonsLen == 0: return newConstraint(c, tyTuple)
   var typ: PType
   result = newOrPrevType(tyTuple, prev, c)
   result.n = newNodeI(nkRecList, n.info)
@@ -1227,6 +1226,7 @@ proc semTypeNode(c: PContext, n: PNode, prev: PType): PType =
       result = newOrPrevType(tyError, prev, c)
   of nkObjectTy: result = semObjectNode(c, n, prev)
   of nkTupleTy: result = semTuple(c, n, prev)
+  of nkTupleClassTy: result = newConstraint(c, tyTuple)
   of nkTypeClassTy: result = semTypeClass(c, n, prev)
   of nkRefTy: result = semAnyRef(c, n, tyRef, prev)
   of nkPtrTy: result = semAnyRef(c, n, tyPtr, prev)

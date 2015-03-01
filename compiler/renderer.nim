@@ -1292,10 +1292,11 @@ proc gsub(g: var TSrcGen, n: PNode, c: TContext) =
       gsub(g, n.sons[0])
   of nkTupleTy: 
     put(g, tkTuple, "tuple")
-    if sonsLen(n) > 0:
-      put(g, tkBracketLe, "[")
-      gcomma(g, n)
-      put(g, tkBracketRi, "]")
+    put(g, tkBracketLe, "[")
+    gcomma(g, n)
+    put(g, tkBracketRi, "]")
+  of nkTupleClassTy:
+    put(g, tkTuple, "tuple")
   of nkMetaNode_Obsolete:
     put(g, tkParLe, "(META|")
     gsub(g, n.sons[0])

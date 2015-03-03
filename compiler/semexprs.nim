@@ -2129,7 +2129,19 @@ proc semExpr(c: PContext, n: PNode, flags: TExprFlags = {}): PNode =
   of nkPar: 
     case checkPar(n)
     of paNone: result = errorNode(c, n)
-    of paTuplePositions: result = semTuplePositionsConstr(c, n, flags)
+    of paTuplePositions:
+      var oldresult = result
+      result = semTuplePositionsConstr(c, n, flags)
+      block collapseType:
+        if result.sons.len - 1 == 0:
+          break collapseType # don't interpret () as type
+        for i in countup(0, result.sons.len - 1):
+          if result.sons[i].typ == nil or result.sons[i].typ.kind != tyTypeDesc:
+            break collapseType
+        # if all elements end up being typedesc, reinterpret as type
+        result = oldresult
+        var typ = semTypeNode(c, n, nil).skipTypes({tyTypeDesc, tyIter})
+        result.typ = makeTypeDesc(c, typ)
     of paTupleFields: result = semTupleFieldsConstr(c, n, flags)
     of paSingle: result = semExpr(c, n.sons[0], flags)
   of nkCurly: result = semSetConstr(c, n)
